@@ -30,12 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    /* ================= BOTÃO CONTINUAR ================= */
     btnContinuar.addEventListener("click", () => {
         if (!empresaSelecionada) return;
-
         aplicarTema(empresaSelecionada);
-
         selecao.classList.remove("active");
         setTimeout(() => {
             selecao.style.display = "none";
@@ -49,8 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
         logo.src = "";
         mascoteEsquerda.src = "";
         mascoteDireita.src = "";
-
-        // Reset classes
         document.querySelector(".topo").className = "topo";
 
         if (empresa === "amazonet") {
@@ -73,68 +68,78 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    /* ================= VALIDAÇÃO DE CPF ================= */
-    cpfInput.addEventListener("input", () => {
-        cpfInput.value = cpfInput.value.replace(/\D/g, ''); // somente números
-    });
-
+    /* ================= VALIDAÇÃO E MÁSCARA CPF ================= */
     function validarCPF(cpf) {
-        cpf = cpf.replace(/[^\d]+/g, '');
+        cpf = cpf.replace(/\D/g, '');
         if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-
         let sum = 0;
         for (let i = 0; i < 9; i++) sum += parseInt(cpf.charAt(i)) * (10 - i);
         let rev = 11 - (sum % 11);
         if (rev === 10 || rev === 11) rev = 0;
         if (rev !== parseInt(cpf.charAt(9))) return false;
-
         sum = 0;
         for (let i = 0; i < 10; i++) sum += parseInt(cpf.charAt(i)) * (11 - i);
         rev = 11 - (sum % 11);
         if (rev === 10 || rev === 11) rev = 0;
         if (rev !== parseInt(cpf.charAt(10))) return false;
-
         return true;
     }
 
-    cpfInput.addEventListener("blur", () => {
-        const cpfErro = document.getElementById("cpfErro");
-        if (!validarCPF(cpfInput.value)) {
-            cpfInput.classList.add("input-erro");
-            cpfErro.textContent = "CPF inválido";
-        } else {
-            cpfInput.classList.remove("input-erro");
-            cpfErro.textContent = "";
-        }
-    });
+    function aplicarMascaraCPF(input) {
+        input.addEventListener("input", () => {
+            let valor = input.value.replace(/\D/g, '');
+            if (valor.length > 11) valor = valor.slice(0, 11);
 
-    /* ================= VALIDAÇÃO DE TELEFONE ================= */
-    function validarTelefone(input) {
-        const valor = input.value.replace(/\D/g, '');
-        return valor.length >= 10;
+            if (valor.length <= 3) valor = valor;
+            else if (valor.length <= 6) valor = `${valor.slice(0, 3)}.${valor.slice(3)}`;
+            else if (valor.length <= 9) valor = `${valor.slice(0, 3)}.${valor.slice(3, 6)}.${valor.slice(6)}`;
+            else valor = `${valor.slice(0, 3)}.${valor.slice(3, 6)}.${valor.slice(6, 9)}-${valor.slice(9)}`;
+
+            input.value = valor;
+        });
+
+        input.addEventListener("blur", () => {
+            const cpfErro = document.getElementById("cpfErro");
+            const valor = input.value.replace(/\D/g, '');
+            if (!validarCPF(valor)) {
+                input.classList.add("input-erro");
+                cpfErro.textContent = "CPF inválido";
+            } else {
+                input.classList.remove("input-erro");
+                cpfErro.textContent = "";
+            }
+        });
     }
+    aplicarMascaraCPF(cpfInput);
 
-    tel1Input.addEventListener("blur", () => {
-        const erro = document.getElementById("tel1Erro");
-        if (!validarTelefone(tel1Input)) {
-            tel1Input.classList.add("input-erro");
-            erro.textContent = "Telefone inválido";
-        } else {
-            tel1Input.classList.remove("input-erro");
-            erro.textContent = "";
-        }
-    });
+    /* ================= TELEFONE COM MÁSCARA E VALIDAÇÃO ================= */
+    function aplicarMascaraTelefone(input) {
+        input.addEventListener("input", () => {
+            let valor = input.value.replace(/\D/g, '');
+            if (valor.length > 11) valor = valor.slice(0, 11);
 
-    tel2Input.addEventListener("blur", () => {
-        const erro = document.getElementById("tel2Erro");
-        if (tel2Input.value && !validarTelefone(tel2Input)) {
-            tel2Input.classList.add("input-erro");
-            erro.textContent = "Telefone inválido";
-        } else {
-            tel2Input.classList.remove("input-erro");
-            erro.textContent = "";
-        }
-    });
+            if (valor.length <= 2) valor = `(${valor}`;
+            else if (valor.length <= 6) valor = `(${valor.slice(0, 2)}) ${valor.slice(2)}`;
+            else if (valor.length <= 10) valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 6)}-${valor.slice(6)}`;
+            else valor = `(${valor.slice(0, 2)}) ${valor.slice(2, 7)}-${valor.slice(7)}`;
+
+            input.value = valor;
+        });
+
+        input.addEventListener("blur", () => {
+            const erro = document.getElementById(input.id + "Erro");
+            const valor = input.value.replace(/\D/g, '');
+            if (valor.length !== 10 && valor.length !== 11) {
+                input.classList.add("input-erro");
+                erro.textContent = "Telefone inválido (10 ou 11 dígitos)";
+            } else {
+                input.classList.remove("input-erro");
+                erro.textContent = "";
+            }
+        });
+    }
+    aplicarMascaraTelefone(tel1Input);
+    aplicarMascaraTelefone(tel2Input);
 
     /* ================= PREENCIMENTO AUTOMÁTICO DO CEP ================= */
     cepInput.addEventListener("blur", async () => {
@@ -157,7 +162,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Preencher endereço
             ruaInput.value = data.logradouro || '';
             bairroInput.value = data.bairro || '';
             cidadeInput.value = data.localidade || '';
@@ -165,11 +169,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
             cepInput.classList.remove("input-erro");
             cepErro.textContent = "";
-
         } catch (error) {
             cepInput.classList.add("input-erro");
             cepErro.textContent = "Erro ao buscar CEP";
         }
     });
-
 });
