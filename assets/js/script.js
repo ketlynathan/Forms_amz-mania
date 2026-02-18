@@ -49,22 +49,21 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelector(".topo").className = "topo";
 
         if (empresa === "amazonet") {
-            logo.src = "img/amazonet-logo.png";
-            mascoteEsquerda.src = "img/bg_amazonet_left.png";
-            mascoteDireita.src = "img/bg_amazonet_right.png";
+            logo.src = "assets/img/amazonet-logo.png";
+            mascoteEsquerda.src = "assets/img/bg_amazonet_left.png";
+            mascoteDireita.src = "assets/img/bg_amazonet_right.png";
             root.style.setProperty("--cor-primaria", "#052654");
             root.style.setProperty("--cor-secundaria", "#114b9b");
             root.style.setProperty("--cor-botao", "#05853a");
             document.querySelector(".topo").classList.add("amazonet-theme");
         }
-
         if (empresa === "mania") {
-            logo.src = "img/mania_semfundo.png";
-            mascoteEsquerda.src = "img/bg_mania_left.png";
-            mascoteDireita.src = "img/bg_mania_right.png";
+            logo.src = "assets/img/mania_semfundo.png";
+            mascoteEsquerda.src = "assets/img/bg_mania_left.png";
+            mascoteDireita.src = "assets/img/bg_mania_right.png";
             root.style.setProperty("--cor-primaria", "#155ee4");
             root.style.setProperty("--cor-secundaria", "#002866");
-            root.style.setProperty("--cor-botao", "#00F5B0");
+            root.style.setProperty("--cor-botao", "#19d6a1");
         }
     }
 
