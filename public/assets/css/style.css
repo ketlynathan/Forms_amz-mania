@@ -52,25 +52,17 @@ body {
 
 /* ================= CEP SOBRE FUNDO AZUL ================= */
 .cep-overlay {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 100%;
-    max-width: 380px;
-    padding: 2rem;
-    background: var(--cor-input);
-    border-radius: 16px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-    text-align: center;
-    z-index: 20;
+    background-color: #0b3d91;
+    /* azul escuro */
+    padding: 20px;
+    color: #fff;
+    /* texto branco */
 }
 
-.cep-overlay h2 {
-    font-size: 1.8rem;
-    font-weight: 600;
-    margin-bottom: 25px;
-    color: var(--cor-primaria);
+.loader {
+    color: yellow;
+    /* visível sobre azul */
+    font-weight: bold;
 }
 
 .form-group.destaque input {
@@ -90,9 +82,19 @@ body {
 }
 
 .loader {
-    margin-top: 15px;
-    font-size: 1.2rem;
-    color: var(--cor-primaria);
+    display: none;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #fff;
+}
+
+.loader.hidden {
+    display: none;
+}
+
+.loader:not(.hidden) {
+    display: block;
+    /* mostrar quando remover hidden */
 }
 
 /* ================= SELEÇÃO EMPRESA ================= */

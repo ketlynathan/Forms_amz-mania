@@ -11,16 +11,27 @@ document.addEventListener("DOMContentLoaded", () => {
     const mascoteEsquerda = document.getElementById("mascoteEsquerda");
     const mascoteDireita = document.getElementById("mascoteDireita");
 
+    // Campos CEP e endereço
     const cepInput = document.getElementById("cep");
+    const btnBuscarCep = document.getElementById("btnBuscarCep");
+    const loaderCep = document.getElementById("loaderCep");
+    const cepFeedback = document.getElementById("cepFeedback");
+
     const ruaInput = document.getElementById("rua");
     const bairroInput = document.getElementById("bairro");
     const cidadeInput = document.getElementById("cidade");
     const ufInput = document.getElementById("uf");
-    const selectPlanos = document.getElementById("planos");
-    const loader = document.getElementById("loader");
-    const cepErro = document.getElementById("cepErro");
+    const cepDisplay = document.getElementById("cepDisplay");
 
-    // Seleção de empresa
+    // Planos
+    const selectPlanos = document.getElementById("planos");
+    const form = document.getElementById("formulario");
+
+    formContainer.style.display = "block";   // mantém visível
+    stepCep.classList.remove("hidden");
+    stepForm.classList.add("hidden");
+
+    // ------------------ SELEÇÃO DE EMPRESA ------------------
     cards.forEach(card => {
         card.addEventListener("click", () => {
             cards.forEach(c => c.classList.remove("ativo"));
@@ -30,15 +41,14 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Ao continuar, mostra a tela de CEP primeiro
     btnContinuar.addEventListener("click", () => {
         if (!empresaSelecionada) return;
-        aplicarTema(empresaSelecionada);
-        selecao.style.display = "none";
 
-        // Exibe apenas o CEP primeiro
+        aplicarTema(empresaSelecionada);
+
+        selecao.style.display = "none";
         formContainer.style.display = "block";
-        document.querySelector("#formulario").style.display = "none";
+        form.style.display = "none"; // esconde form completo até carregar CEP
         cepInput.focus();
     });
 
@@ -59,37 +69,59 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // =================== FUNÇÕES DE ENDEREÇO ===================
-    async function buscarCep(cep) {
+    // ------------------ MÁSCARA CEP ------------------
+    cepInput.addEventListener("input", () => {
+        let v = cepInput.value.replace(/\D/g, '');
+        if (v.length > 5) v = v.slice(0, 5) + '-' + v.slice(5, 8);
+        cepInput.value = v;
+    });
+
+    // ------------------ BOTÃO BUSCAR CEP ------------------
+    btnBuscarCep.addEventListener("click", async () => {
+        let cep = cepInput.value.replace(/\D/g, "");
+
+        if (cep.length !== 8) {
+            cepFeedback.textContent = "CEP inválido!";
+            return;
+        }
+
+        loaderCep.classList.remove("hidden");
+        cepFeedback.textContent = "";
+
         try {
-            loader.style.display = "block";
-            const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-            const data = await response.json();
-            loader.style.display = "none";
+            // Consulta ViaCEP
+            const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
+            const data = await res.json();
+
+            loaderCep.classList.add("hidden");
 
             if (data.erro) {
-                cepErro.innerText = "CEP não encontrado";
-                return null;
+                cepFeedback.textContent = "CEP não encontrado!";
+                return;
             }
 
-            ruaInput.value = data.logradouro || '';
-            bairroInput.value = data.bairro || '';
-            cidadeInput.value = data.localidade || '';
-            ufInput.value = data.uf || '';
-            cepErro.innerText = '';
+            // Preencher campos
+            ruaInput.value = data.logradouro || "";
+            bairroInput.value = data.bairro || "";
+            cidadeInput.value = data.localidade || "";
+            ufInput.value = data.uf || "";
+            cepDisplay.value = data.cep;
 
-            return data;
+            // Carregar planos dinamicamente
+            await carregarPlanos(cep);
+
+            // Mostrar formulário completo
+            form.style.display = "grid";
+
         } catch (err) {
-            loader.style.display = "none";
+            loaderCep.classList.add("hidden");
             console.error(err);
-            cepErro.innerText = "Erro ao buscar CEP";
-            return null;
+            cepFeedback.textContent = "Erro ao buscar CEP!";
         }
-    }
+    });
 
-    // =================== FUNÇÃO DE PLANOS ===================
+    // ------------------ FUNÇÃO CARREGAR PLANOS ------------------
     async function carregarPlanos(cep) {
-        loader.style.display = "block";
         selectPlanos.disabled = true;
         selectPlanos.innerHTML = '<option>Carregando planos...</option>';
 
@@ -101,18 +133,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-            const response = await fetch(apiUrl);
-            const dados = await response.json();
+            // Simulando fetch
+            // Substitua pelo fetch real da sua API
+            // const response = await fetch(apiUrl);
+            // const dados = await response.json();
+            const dados = [
+                { id: 1, nome: "Plano Básico" },
+                { id: 2, nome: "Plano Premium" },
+                { id: 3, nome: "Plano Empresarial" }
+            ];
 
             selectPlanos.innerHTML = '<option value="">Selecione um plano</option>';
-
-            if (!dados || dados.length === 0) {
-                selectPlanos.innerHTML = '<option value="">Nenhum plano disponível</option>';
-                return;
-            }
-
             dados.forEach(plano => {
-                const option = document.createElement('option');
+                const option = document.createElement("option");
                 option.value = plano.id;
                 option.textContent = plano.nome;
                 selectPlanos.appendChild(option);
@@ -123,22 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (err) {
             console.error(err);
             selectPlanos.innerHTML = '<option value="">Erro ao carregar planos</option>';
-        } finally {
-            loader.style.display = "none";
         }
     }
-
-    // =================== EVENTO CEP ===================
-    cepInput.addEventListener("blur", async () => {
-        const cep = cepInput.value.replace(/\D/g, '');
-        if (cep.length === 8) {
-            const endereco = await buscarCep(cep);
-            if (endereco) {
-                await carregarPlanos(cep);
-                // Mostra o formulário completo depois do CEP e planos
-                document.querySelector("#formulario").style.display = "grid";
-            }
-        }
-    });
 
 });

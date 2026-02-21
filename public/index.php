@@ -31,22 +31,7 @@
         </div>
     </section>
 
-    <!-- ================= SELEÇÃO CEP ================= -->
-    <section id="stepCep" class="step">
-        <div class="cep-overlay">
-            <h2>Informe seu CEP</h2>
-            <div class="form-group destaque">
-                <input
-                    type="text"
-                    id="cep"
-                    placeholder="00000-000"
-                    maxlength="9"
-                    autocomplete="off">
-                <div id="cepFeedback" class="feedback"></div>
-            </div>
-            <div id="loaderCep" class="loader hidden">Buscando endereço...</div>
-        </div>
-    </section>
+
 
 
     <!-- ================= FORMULÁRIO ================= -->
@@ -66,140 +51,162 @@
 
             <!-- CONTAINER CENTRAL -->
             <div class="container">
-
-                <form id="formulario">
-
-                    <!-- ================= DADOS PESSOAIS ================= -->
-
-                    <div class="form-group">
-                        <label>Nome Completo *</label>
-                        <input type="text" name="nome" required>
+                <!-- ================= SELEÇÃO CEP ================= -->
+                <section id="stepCep" class="step">
+                    <div class="cep-overlay">
+                        <h2>Informe seu CEP</h2>
+                        <div class="form-group destaque">
+                            <input
+                                type="text"
+                                id="cep"
+                                placeholder="00000-000"
+                                maxlength="9"
+                                autocomplete="off">
+                            <div id="cepFeedback" class="feedback"></div>
+                        </div>
+                        <button id="btnBuscarCep">Buscar Endereço</button>
+                        <div id="loaderCep" class="loader hidden">Buscando endereço...</div>
                     </div>
+                </section>
 
-                    <div class="form-group">
-                        <label>Data de Nascimento *</label>
-                        <input type="date" name="data_nascimento" required>
-                    </div>
+                <section id="stepForm" class="step hidden">
+                    <form id="formulario">
 
-                    <div class="form-group">
-                        <label>CPF *</label>
-                        <input type="text" id="cpf" name="cpf" required>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" name="email" required>
-                    </div>
 
-                    <div class="form-group">
-                        <label>RG *</label>
-                        <input type="text" id="rg" name="rg" required>
-                    </div>
 
-                    <div class="form-row">
-                        <div class="form-group small">
-                            <label>Órgão Emissor *</label>
-                            <select id="orgao" name="orgao" required>
-                                <option value="SSP">SSP</option>
-                                <option value="DETRAN">DETRAN</option>
-                                <option value="IGP">IGP</option>
-                                <option value="PC">PC</option>
-                                <option value="SESP">SESP</option>
-                                <option value="SDS">SDS</option>
+                        <!-- ================= DADOS PESSOAIS ================= -->
+
+                        <div class="form-group">
+                            <label>Nome Completo *</label>
+                            <input type="text" name="nome" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Data de Nascimento *</label>
+                            <input type="date" name="data_nascimento" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>CPF *</label>
+                            <input type="text" id="cpf" name="cpf" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" name="email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>RG *</label>
+                            <input type="text" id="rg" name="rg" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group small">
+                                <label>Órgão Emissor *</label>
+                                <select id="orgao" name="orgao" required>
+                                    <option value="SSP">SSP</option>
+                                    <option value="DETRAN">DETRAN</option>
+                                    <option value="IGP">IGP</option>
+                                    <option value="PC">PC</option>
+                                    <option value="SESP">SESP</option>
+                                    <option value="SDS">SDS</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group uf">
+                                <label>UF *</label>
+                                <select id="uf_rg" name="uf_rg" required></select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Telefone 1 *</label>
+                            <input type="tel" id="tel1" name="telefone1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Telefone 2</label>
+                            <input type="tel" id="tel2" name="telefone2">
+                        </div>
+
+                        <!-- Endereço já preenchido (readonly exceto número) -->
+                        <div class="form-group">
+                            <label>CEP</label>
+                            <input type="text" id="cepDisplay" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Rua</label>
+                            <input type="text" id="rua" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Número *</label>
+                            <input type="text" name="numero" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Bairro</label>
+                            <input type="text" id="bairro" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>Cidade</label>
+                            <input type="text" id="cidade" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label>UF</label>
+                            <input type="text" id="uf" readonly>
+                        </div>
+
+                        <!-- Planos carregados dinamicamente -->
+                        <div class="form-group">
+                            <label>Plano *</label>
+                            <select id="planos" name="plano" required>
+                                <option value="">Selecione o plano</option>
+                            </select>
+                            <div id="loaderPlanos" class="loader hidden">Buscando endereço...</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vendedor *</label>
+                            <select id="id_vendedor" name="id_vendedor" required>
+                                <option value="">Selecione o vendedor</option>
                             </select>
                         </div>
 
-                        <div class="form-group uf">
-                            <label>UF *</label>
-                            <select id="uf_rg" name="uf_rg" required></select>
+                        <div class="form-group">
+                            <label>Promoção *</label>
+                            <input type="text" name="promocao" required>
                         </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label>Telefone 1 *</label>
-                        <input type="tel" id="tel1" name="telefone1" required>
-                    </div>
+                        <div class="form-group full">
+                            <label>Observações *</label>
+                            <textarea name="observacoes" required></textarea>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Telefone 2</label>
-                        <input type="tel" id="tel2" name="telefone2">
-                    </div>
+                        <div class="form-group">
+                            <label>Frente do Documento *</label>
+                            <input type="file" name="doc_frente" required>
+                        </div>
 
-                    <!-- Endereço já preenchido (readonly exceto número) -->
-                    <div class="form-group">
-                        <label>CEP</label>
-                        <input type="text" id="cepDisplay" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Rua</label>
-                        <input type="text" id="rua" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Número *</label>
-                        <input type="text" name="numero" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Bairro</label>
-                        <input type="text" id="bairro" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>Cidade</label>
-                        <input type="text" id="cidade" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label>UF</label>
-                        <input type="text" id="uf" readonly>
-                    </div>
+                        <div class="form-group">
+                            <label>Verso do Documento *</label>
+                            <input type="file" name="doc_verso" required>
+                        </div>
 
-                    <!-- Planos carregados dinamicamente -->
-                    <div class="form-group">
-                        <label>Plano *</label>
-                        <select id="planos" name="plano" required>
-                            <option value="">Selecione o plano</option>
-                        </select>
-                        <div id="loaderPlanos" class="loader hidden">Carregando planos...</div>
-                    </div>
+                        <div class="form-group full">
+                            <label>Selfie com Documento *</label>
+                            <input type="file" name="selfie_doc" required>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Vendedor *</label>
-                        <select id="id_vendedor" name="id_vendedor" required>
-                            <option value="">Selecione o vendedor</option>
-                        </select>
-                    </div>
+                        <!-- BOTÃO -->
+                        <div class="full center">
+                            <button type="submit" class="btn-submit">
+                                SOLICITAR CONTATO
+                            </button>
+                        </div>
 
-                    <div class="form-group">
-                        <label>Promoção *</label>
-                        <input type="text" name="promocao" required>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Observações *</label>
-                        <textarea name="observacoes" required></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Frente do Documento *</label>
-                        <input type="file" name="doc_frente" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Verso do Documento *</label>
-                        <input type="file" name="doc_verso" required>
-                    </div>
-
-                    <div class="form-group full">
-                        <label>Selfie com Documento *</label>
-                        <input type="file" name="selfie_doc" required>
-                    </div>
-
-                    <!-- BOTÃO -->
-                    <div class="full center">
-                        <button type="submit" class="btn-submit">
-                            SOLICITAR CONTATO
-                        </button>
-                    </div>
-
-                </form>
+                    </form>
+                </section>
             </div>
 
             <!-- MASCOTE DIREITA -->
