@@ -64,17 +64,13 @@
                                 autocomplete="off">
                             <div id="cepFeedback" class="feedback"></div>
                         </div>
-                        <button id="btnBuscarCep">Buscar Endereço</button>
+                        <button type="button" id="btnBuscarCep">Buscar Endereço</button>
                         <div id="loaderCep" class="loader hidden">Buscando endereço...</div>
                     </div>
                 </section>
 
                 <section id="stepForm" class="step hidden">
                     <form id="formulario">
-
-
-
-
                         <!-- ================= DADOS PESSOAIS ================= -->
 
                         <div class="form-group">
