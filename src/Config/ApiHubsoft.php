@@ -12,7 +12,7 @@ class ApiHubsoft
 
     private static function loadEnv()
     {
-        $envPath = realpath(dirname(__FILE__) . '/../env.ini');
+        $envPath = realpath(dirname(__FILE__) . '/../../env.ini');
         if (!$envPath) throw new Exception("env.ini não encontrado.");
         self::$env = parse_ini_file($envPath);
     }
@@ -100,10 +100,16 @@ class ApiHubsoft
         return json_decode($response, true);
     }
 
+
     public static function getServicos($cep)
     {
         $cep = preg_replace('/\D/', '', $cep);
         return self::request("/api/v1/integracao/prospecto/create?cep={$cep}");
+    }
+
+    public static function getVendedores()
+    {
+        return self::request("/api/v1/integracao/configuracao/vendedor");
     }
 
     public static function createProspect($data)

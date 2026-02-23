@@ -4,11 +4,31 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+/* ================= PREVENIR OVERFLOW HORIZONTAL ================= */
+body,
+html {
+    overflow-x: hidden;
+}
+
+.cep-overlay,
+form,
+.form-group,
+input,
+select,
+button {
+    max-width: 100%;
+    box-sizing: border-box;
+    /* importante para padding */
+}
+
 .topo {
     width: 100%;
     display: flex;
-    justify-content: center;   /* centraliza horizontal */
-    align-items: center;       /* centraliza vertical */
+    justify-content: center;
+    /* centraliza horizontal */
+    align-items: center;
+    /* centraliza vertical */
     padding: 20px 0;
 }
 
@@ -18,6 +38,7 @@
     height: auto;
     display: block;
 }
+
 body {
     font-family: "Segoe UI", Arial, sans-serif;
     background: linear-gradient(135deg, #0f172a, #0e1b2c);
@@ -32,8 +53,10 @@ body {
 .selecao {
     min-height: 100vh;
     display: flex;
-    justify-content: center;  /* centraliza horizontal */
-    align-items: center;      /* centraliza vertical */
+    justify-content: center;
+    /* centraliza horizontal */
+    align-items: center;
+    /* centraliza vertical */
     padding: 20px;
 }
 
@@ -44,9 +67,11 @@ body {
     align-items: center;
     padding: 20px;
 }
+
 .step {
     width: 100%;
 }
+
 /* ================= SELEÇÃO EMPRESA ================= */
 .selecao-box {
     text-align: center;
@@ -55,7 +80,7 @@ body {
 }
 
 .cards {
-    display: -webkit-flex ;
+    display: -webkit-flex;
     justify-content: center;
     gap: 50px;
     margin: 50px 0;
@@ -142,7 +167,7 @@ body {
     max-width: 1100px;
     padding: 50px;
     border-radius: 25px;
-    background: rgba(17,75,155,0.95);
+    background: rgba(17, 75, 155, 0.95);
 }
 
 /* ================= CEP STEP ================= */
@@ -164,6 +189,7 @@ body {
     font-size: 1.4rem;
     text-align: center;
 }
+
 #btnBuscarCep {
     margin-top: 20px;
     padding: 12px 30px;
@@ -188,19 +214,45 @@ form {
     gap: 25px;
 }
 
+/* Ocupa as 2 colunas do grid principal */
+.form-row.full {
+    grid-column: span 2;
+}
+
+/* Linha flexível */
+.form-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+/* Grupo padrão */
 .form-group {
     display: flex;
     flex-direction: column;
 }
 
-.form-group label {
-    font-size: 13px;
-    margin-bottom: 5px;
-    font-weight: bold;
+/* Órgão menor */
+.form-group.small {
+    flex: 0 0 200px;
 }
 
+/* UF menor */
+.form-group.uf {
+    flex: 0 0 120px;
+}
+
+/* Inputs e selects */
 .form-group input,
-.form-group select,
+.form-group select {
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: none;
+    background: #fff;
+    color: #000;
+    height: 42px;
+}
+
 .form-group textarea {
     padding: 12px;
     border-radius: 10px;
@@ -226,25 +278,77 @@ textarea {
     color: #fff;
     font-weight: bold;
     cursor: pointer;
+
+    grid-column: span 2;
+    /* ocupa as 2 colunas */
+    justify-self: center;
+    /* centraliza horizontalmente */
+    width: 250px;
+    /* largura controlada */
 }
 
-/* ================= RESPONSIVO ================= */
-/* Para tablets e abaixo (até 900px) */
+.erro {
+    color: #e53935;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.input-erro {
+    border: 1px solid #e53935 !important;
+}
+
+.input-sucesso {
+    border: 1px solid #2e7d32 !important;
+}
+
+/* ================= AJUSTE TABLET ================= */
 @media (max-width: 900px) {
+
+    /* Formulário ocupa 1 coluna */
     form {
         grid-template-columns: 1fr;
+        gap: 15px;
+        /* reduz espaçamento */
     }
 
-    .full {
-        grid-column: span 1;
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+        align-items: stretch;
     }
 
+    /* Inputs e selects ocupam 100% */
+    .form-group,
+    .form-group.small,
+    .form-group.uf,
+    .form-row.full {
+        width: 100% !important;
+        flex: 1 1 100%;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    /* Botão submit */
+    .btn-submit {
+        width: 100%;
+        max-width: 100%;
+        justify-self: stretch;
+    }
+
+    /* Container ajustado */
     .container {
-        padding: 30px;
+        padding: 25px 20px;
     }
 
+    /* Ajuste visual para logo e mascotes */
     .logo {
-        max-width: 160px;
+        max-width: 180px;
     }
 
     .mascote-area {
@@ -252,67 +356,77 @@ textarea {
     }
 
     .mascote-area img {
-        max-width: 200px;
-    }
-
-    .cards {
-        gap: 20px;
-        margin: 30px 0;
-        justify-content: center;
-    }
-
-    .card {
-        width: 100%;
-        max-width: 300px;
-        padding: 30px 20px;
+        max-width: 180px;
     }
 }
 
-/* Para celulares (até 600px) */
+/* ================= AJUSTES FINAIS RESPONSIVO ================= */
 @media (max-width: 600px) {
-    .cep-overlay {
-        padding: 1.5rem;
-        max-width: 90%;
+
+    /* Container */
+    .container {
+        padding: 20px 15px;
+        /* reduz padding para caber na tela */
+        border-radius: 15px;
     }
 
-    .form-group.destaque input {
-        font-size: 1.4rem;
-        padding: 12px;
-    }
-
-    #btnContinuar,
-    .btn-submit {
-        width: 100%;
-        padding: 14px 0;
-    }
-    .cards {
-        flex-direction: column;
-        gap: 20px;
-        align-items: center; /* 🔥 centraliza cards */
-    }
-
-    .card {
-        width: 100%;
-        max-width: 300px;
-    }
-
-    .card img {
-        max-width: 150px;
-    }
-    #stepCep {
-        padding: 30px 15px;
-    }
-
+    /* CEP STEP */
     #stepCep input,
     #stepCep button {
         width: 100%;
         max-width: 100%;
     }
 
-    #stepCep h2 {
-        text-align: center;
-        margin-bottom: 10px;
+    /* Formulário */
+    form {
+        grid-template-columns: 1fr;
+        gap: 10px;
+        /* reduz gap */
     }
-   
 
+    .form-row {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+
+    .form-group,
+    .form-group.small,
+    .form-group.uf {
+        flex: 1 1 100%;
+        width: 100% !important;
+    }
+
+    .full {
+        grid-column: span 1 !important;
+    }
+
+    /* Inputs e selects dentro do form */
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* Botão submit */
+    .btn-submit {
+        width: 100%;
+        max-width: 100%;
+        justify-self: stretch;
+    }
+
+    /* Cep overlay */
+    .cep-overlay {
+        padding: 10px;
+        margin: 0 5px;
+        max-width: 100%;
+    }
+
+    /* Loader e avisos */
+    .loader,
+    #manualEnderecoAviso {
+        width: 100%;
+        text-align: center;
+    }
 }

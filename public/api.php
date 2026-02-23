@@ -1,56 +1,67 @@
 <?php
-// api.php
-
-// Configura resposta JSON e permite CORS
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
 header('Content-Type: application/json');
-header('Access-Control-Allow-Origin: *');
 
-// Carrega funções auxiliares (getToken, testarPlanos, etc.)
-require 'funcoes.php';
+require_once __DIR__ . '/../src/Config/ApiHubsoft.php';
+require_once __DIR__ . '/../src/Config/ApiHubsoftMania.php';
 
-// --- Captura parâmetros da query ---
-$cep = $_GET['cep'] ?? null;
-$rota = $_GET['rota'] ?? null;
+use Src\Config\ApiHubsoft;
+use Src\Config\ApiHubsoftMania;
 
-// --- Validação básica ---
-if (!$cep) {
-    http_response_code(400); // Bad Request
+try {
+    $acao = $_GET['acao'] ?? null;
+    $empresa = $_GET['empresa'] ?? null; // mania ou amazonet
+
+    if (!$acao) throw new Exception("Ação não informada");
+    if (!$empresa) throw new Exception("Empresa não informada");
+
+    // Define a empresa para Amazonet (ApiHubsoft) ou Mania (ApiHubsoftMania)
+    if ($empresa === 'amazonet') {
+        ApiHubsoft::setEmpresa('amazonet');
+    } elseif ($empresa === 'mania') {
+        // Mania não precisa setEmpresa, a classe já usa o env.ini
+    } else {
+        throw new Exception("Empresa inválida");
+    }
+
+    $result = null;
+    switch ($acao) {
+        case 'vendedores':
+            $result = ($empresa === 'amazonet')
+                ? ApiHubsoft::getVendedores()
+                : ApiHubsoftMania::getVendedores();
+            break;
+
+        case 'servicos':
+            $cep = $_GET['cep'] ?? null;
+            if (!$cep) throw new Exception("CEP é obrigatório");
+            $result = ($empresa === 'amazonet')
+                ? ApiHubsoft::getServicos($cep)
+                : ApiHubsoftMania::getServicos($cep);
+            break;
+
+        case 'createProspect':
+            $data = json_decode(file_get_contents("php://input"), true);
+            if (!$data) throw new Exception("Dados do prospect são obrigatórios");
+            $result = ($empresa === 'amazonet')
+                ? ApiHubsoft::createProspect($data)
+                : ApiHubsoftMania::createProspect($data);
+            break;
+
+        default:
+            throw new Exception("Ação inválida");
+    }
+
     echo json_encode([
-        'status' => 'erro',
-        'mensagem' => 'CEP não informado'
+        'success' => true,
+        'empresa' => $empresa,
+        'data' => $result
     ]);
-    exit;
-}
-
-// --- Geração do token ---
-$token = getToken();
-if (!$token) {
-    http_response_code(500); // Internal Server Error
+} catch (Exception $e) {
+    http_response_code(400);
     echo json_encode([
-        'status' => 'erro',
-        'mensagem' => 'Token não gerado'
+        'success' => false,
+        'error' => $e->getMessage()
     ]);
-    exit;
-}
-
-// --- Função auxiliar para responder JSON com status ---
-function responder($dados, $codigoHttp = 200) {
-    http_response_code($codigoHttp);
-    echo json_encode($dados, JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-// --- Roteamento simples ---
-switch ($rota) {
-
-    case 'planos':
-        $planos = testarPlanos($token, $cep);
-        responder($planos);
-        break;
-
-    default:
-        // Se não houver rota específica, também retorna os planos
-        $planos = testarPlanos($token, $cep);
-        responder($planos);
-        break;
 }

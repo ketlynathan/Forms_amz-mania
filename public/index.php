@@ -97,7 +97,7 @@
                         <div class="form-group">
                             <label>RG *</label>
                             <input type="text" id="rg" inputmode="numeric" pattern="[0-9]*">
-                    
+
                         </div>
 
                         <div class="form-row">
@@ -155,26 +155,21 @@
                             <input type="text" id="uf" readonly>
                         </div>
 
-                        <!-- Planos carregados dinamicamente -->
                         <div class="form-group">
                             <label>Plano *</label>
                             <select id="planos" name="plano" required>
                                 <option value="">Selecione o plano</option>
                             </select>
-                            <div id="loaderPlanos" class="loader hidden">Buscando endereço...</div>
+                            <div id="loaderPlanos" class="loader hidden">Buscando planos...</div>
                         </div>
 
                         <div class="form-group">
                             <label>Vendedor *</label>
-                            <select id="id_vendedor" name="id_vendedor" required>
+                            <select id="vendedor" name="vendedor" required>
                                 <option value="">Selecione o vendedor</option>
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label>Promoção *</label>
-                            <input type="text" name="promocao" required>
-                        </div>
 
                         <div class="form-group full">
                             <label>Observações *</label>
@@ -199,7 +194,7 @@
                         <!-- BOTÃO -->
                         <div class="full center">
                             <button type="submit" class="btn-submit">
-                                SOLICITAR CONTATO
+                                ENVIAR FORMULÁRIO
                             </button>
                         </div>
 

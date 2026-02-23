@@ -20,7 +20,7 @@ function loadEnv($path)
     }
 }
 
-loadEnv(__DIR__ . '/.env');
+loadEnv(__DIR__ . '/../../.env');
 
 /* =====================================================
    2️⃣ GERAR TOKEN
