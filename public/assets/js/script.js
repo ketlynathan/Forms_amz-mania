@@ -4,7 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let empresaSelecionada = null;
 
     // ================= ELEMENTOS =================
-    // ================= ELEMENTOS =================
 
     const stepCep = document.getElementById("stepCep");
     const stepForm = document.getElementById("stepForm");
@@ -40,6 +39,76 @@ document.addEventListener("DOMContentLoaded", () => {
             stepAtivo.classList.remove("hidden");
         }
     }
+
+    const cpfInput = document.getElementById("cpf");
+
+    cpfInput.addEventListener("input", () => {
+
+        // Remove tudo que não for número
+        let value = cpfInput.value.replace(/\D/g, "");
+
+        // Limita a 11 dígitos
+        value = value.slice(0, 11);
+
+        // Aplica máscara
+        value = value
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d)/, "$1.$2")
+            .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+
+        cpfInput.value = value;
+
+    });
+
+    function validarCPF(cpf) {
+        cpf = cpf.replace(/\D/g, "");
+        return cpf.length === 11;
+    }
+
+    function onlyNumbers(input, maxLength) {
+        input.addEventListener("input", () => {
+            let value = input.value.replace(/\D/g, "");
+            input.value = value.slice(0, maxLength);
+        });
+    }
+
+    
+
+    const tel1 = document.getElementById("tel1");
+    const tel2 = document.getElementById("tel2");
+
+    function aplicarMascaraTelefone(input) {
+
+        if (!input) return;
+
+        input.addEventListener("input", () => {
+
+            let value = input.value.replace(/\D/g, "").slice(0, 11);
+
+            if (value.length > 10) {
+                value = value.replace(/(\d{2})(\d{5})(\d{1,4})/, "($1) $2-$3");
+            } else {
+                value = value.replace(/(\d{2})(\d{4})(\d{1,4})/, "($1) $2-$3");
+            }
+
+            input.value = value;
+        });
+    }
+
+    aplicarMascaraTelefone(tel1);
+    aplicarMascaraTelefone(tel2);
+
+    const rgInput = document.getElementById("rg");
+
+    rgInput.addEventListener("input", () => {
+
+        let value = rgInput.value.replace(/\D/g, "");
+
+        value = value.slice(0, 9); // ajuste conforme regra
+
+        rgInput.value = value;
+
+    });
 
     // ================= ESTADO INICIAL =================
     formContainer.classList.add("hidden");
@@ -118,6 +187,21 @@ document.addEventListener("DOMContentLoaded", () => {
         cepInput.value = v;
     });
 
+    // ================= FUNÇÃO PLANOS =================
+    async function carregarPlanos(cep) {
+        try {
+            const response = await fetch(`/api.php/api/planos?cep=${cep}`);
+            const data = await response.json();
+
+            console.log("Resposta completa da API:", data);
+            console.log("Tipo:", typeof data);
+            console.log("É array?", Array.isArray(data));
+
+        } catch (error) {
+            console.error("Erro ao carregar planos:", error);
+        }
+    }
+
     // =========================================================
     // ================= BUSCAR CEP + PLANOS ===================
     // =========================================================
@@ -132,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         btnBuscarCep.disabled = true;
         loaderCep.classList.remove("hidden");
-        cepFeedback.textContent = "";
 
         try {
 
@@ -144,14 +227,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 return;
             }
 
-            // Preenche antes de trocar step
             ruaInput.value = endereco.logradouro || "";
             bairroInput.value = endereco.bairro || "";
             cidadeInput.value = endereco.localidade || "";
             ufInput.value = endereco.uf || "";
             cepDisplay.value = endereco.cep || "";
 
-            // Troca step
+            await carregarPlanos(cep);
+
             irParaStep("stepForm");
 
         } catch (error) {
@@ -163,4 +246,5 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
     });
+    
 });

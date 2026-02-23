@@ -1,33 +1,56 @@
 <?php
+// api.php
 
+// Configura resposta JSON e permite CORS
 header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
 
-require_once dirname(__DIR__) . '/src/Controllers/FormController.php';
+// Carrega funções auxiliares (getToken, testarPlanos, etc.)
+require 'funcoes.php';
 
-use Src\Controllers\FormController;
+// --- Captura parâmetros da query ---
+$cep = $_GET['cep'] ?? null;
+$rota = $_GET['rota'] ?? null;
 
-$controller = new FormController();
-$action = $_GET['action'] ?? null;
-
-if ($action === 'buscar') {
-    echo $controller->buscarEndereco();
+// --- Validação básica ---
+if (!$cep) {
+    http_response_code(400); // Bad Request
+    echo json_encode([
+        'status' => 'erro',
+        'mensagem' => 'CEP não informado'
+    ]);
     exit;
 }
 
-if ($action === 'buscar_endereco') {
-    echo $controller->buscarEndereco();
+// --- Geração do token ---
+$token = getToken();
+if (!$token) {
+    http_response_code(500); // Internal Server Error
+    echo json_encode([
+        'status' => 'erro',
+        'mensagem' => 'Token não gerado'
+    ]);
     exit;
 }
 
-if ($action === 'buscar_planos') {
-    echo $controller->buscarPlanos();
+// --- Função auxiliar para responder JSON com status ---
+function responder($dados, $codigoHttp = 200) {
+    http_response_code($codigoHttp);
+    echo json_encode($dados, JSON_UNESCAPED_UNICODE);
     exit;
 }
 
-if ($action === 'enviar') {
-    echo $controller->enviar();
-    exit;
-}
+// --- Roteamento simples ---
+switch ($rota) {
 
-http_response_code(404);
-echo json_encode(['status' => 'error', 'msg' => 'Rota inválida']);
+    case 'planos':
+        $planos = testarPlanos($token, $cep);
+        responder($planos);
+        break;
+
+    default:
+        // Se não houver rota específica, também retorna os planos
+        $planos = testarPlanos($token, $cep);
+        responder($planos);
+        break;
+}

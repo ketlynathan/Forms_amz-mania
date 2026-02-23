@@ -90,12 +90,14 @@
 
                         <div class="form-group">
                             <label>Email *</label>
+
                             <input type="email" name="email" required>
                         </div>
 
                         <div class="form-group">
                             <label>RG *</label>
-                            <input type="text" id="rg" name="rg" required>
+                            <input type="text" id="rg" inputmode="numeric" pattern="[0-9]*">
+                    
                         </div>
 
                         <div class="form-row">
