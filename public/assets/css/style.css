@@ -360,6 +360,45 @@ textarea {
     }
 }
 
+
+.toast {
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    min-width: 280px;
+    padding: 16px 22px;
+    border-radius: 8px;
+    font-weight: 500;
+    color: #fff;
+    z-index: 9999;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: all 0.4s ease;
+}
+
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.toast.success {
+    background: linear-gradient(135deg, #00b09b, #96c93d);
+}
+
+.toast.error {
+    background: linear-gradient(135deg, #ff416c, #ff4b2b);
+}
+
+.toast.warning {
+    background: linear-gradient(135deg, #f7971e, #ffd200);
+}
+
+.hidden {
+    display: none;
+}
+
+
 /* ================= AJUSTES FINAIS RESPONSIVO ================= */
 @media (max-width: 600px) {
 

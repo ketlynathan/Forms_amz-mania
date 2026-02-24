@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const stepCep = document.getElementById("stepCep");
     const stepForm = document.getElementById("stepForm");
 
+    const form = document.getElementById("formulario");
+    const btnSubmit = document.querySelector(".btn-submit");
+
     const cepInput = document.getElementById("cep");
     const btnBuscarCep = document.getElementById("btnBuscarCep");
     const loaderCep = document.getElementById("loaderCep");
@@ -31,6 +34,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const mascoteDireita = document.getElementById("mascoteDireita");
     const selectPlano = document.getElementById("planos");
     const selectVendedor = document.getElementById("vendedor");
+    const dataInput = document.getElementById("data_nascimento");
+    const erroData = document.getElementById("erroData");
 
     // ---------------- FUNÇÕES ----------------
     function irParaStep(idStep) {
@@ -40,9 +45,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function popularVendedores(lista) {
         if (!selectVendedor) return;
+
         selectVendedor.innerHTML = '<option value="">Selecione o vendedor</option>';
+
         lista.forEach(v => {
             const opt = document.createElement("option");
+            opt.value = v.id;        // 🔥 AQUI ESTÁ A CORREÇÃO
             opt.textContent = v.name;
             selectVendedor.appendChild(opt);
         });
@@ -50,13 +58,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function popularPlanos(lista) {
         if (!selectPlano) return;
+
         selectPlano.innerHTML = '<option value="">Selecione o plano</option>';
+
         lista.forEach(s => {
             const opt = document.createElement("option");
+            opt.value = s.id_servico;                // 🔥 ID real
+            opt.dataset.valor = s.valor;     // 🔥 VALOR real
             opt.textContent = `${s.descricao} - R$ ${s.valor}`;
             selectPlano.appendChild(opt);
         });
-        document.getElementById("loaderPlanos")?.classList.add("hidden");
     }
 
     function preencherEndereco(data) {
@@ -86,6 +97,28 @@ document.addEventListener("DOMContentLoaded", () => {
             console.error("Erro ao buscar serviços:", err);
             alert("Erro ao carregar serviços.");
         }
+    }
+
+    function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+
+        toast.className = `toast ${type}`;
+        toast.innerText = message;
+
+        toast.classList.remove("hidden");
+
+        setTimeout(() => {
+            toast.classList.add("show");
+        }, 50);
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+
+            setTimeout(() => {
+                toast.classList.add("hidden");
+            }, 400);
+
+        }, 4000);
     }
 
 
@@ -139,6 +172,8 @@ document.addEventListener("DOMContentLoaded", () => {
         rgInput.value = rgInput.value.replace(/\D/g, "").slice(0, 9);
     });
 
+
+
     // ================= ESTADO INICIAL =================
     formContainer.classList.add("hidden");
 
@@ -158,6 +193,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 const vendedoresResp = await fetch(`api.php?acao=vendedores&empresa=${empresaSelecionada}`);
                 vendedores = (await vendedoresResp.json()).data?.vendedores || [];
+                // 🔎 FILTRO AQUI
+                vendedores = vendedores.filter(v =>
+                    v.name && /(tec|autonomo|auto)/i.test(v.name)
+                );
+
                 popularVendedores(vendedores);
             } catch (err) {
                 console.error("Erro ao carregar token ou vendedores:", err);
@@ -171,6 +211,13 @@ document.addEventListener("DOMContentLoaded", () => {
         formContainer.classList.remove("hidden");
         irParaStep("stepCep");
     });
+    function mostrarErro(mensagem) {
+        erroData.innerText = mensagem;
+        erroData.style.display = "block";
+        dataInput.classList.add("input-erro");
+
+        dataInput.focus();
+    }
 
 
     function aplicarTema(empresa) {
@@ -215,70 +262,161 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
 
-
-    window.cepCallback = async function (data) {
-        const cep = data.cep.replace(/\D/g, "");
-        cepCache[cep] = data;
-        preencherEndereco(data);
-
-        // 🔹 Chamar API de serviços
-        try {
-            const resServicos = await fetch(`api.php?acao=servicos&empresa=${empresaSelecionada}&cep=${cep}`);
-            const servicosJson = await resServicos.json();
-            servicos = servicosJson.data?.servicos || [];
-            console.log("Serviços disponíveis:", servicos);
-
-        } catch (err) {
-            console.error("Erro ao buscar serviços:", err);
-        }
-
-        irParaStep("stepForm");
-    };
-
     // ---------------- CEP ----------------
     btnBuscarCep.addEventListener("click", async () => {
+
         let cep = cepInput.value.replace(/\D/g, "");
-        if (cep.length !== 8) return alert("CEP inválido");
+
+        // 🔎 Validação básica
+        if (cep.length !== 8) {
+            showToast("Digite um CEP válido com 8 números.", "warning");
+            cepInput.focus();
+            return;
+        }
 
         loaderCep.classList.remove("hidden");
+
         try {
             const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await res.json();
-            if (data.erro) throw new Error("CEP não encontrado");
 
+            // ❌ CEP inexistente
+            if (data.erro) {
+                showToast("CEP não encontrado. Verifique e tente novamente.", "error");
+                cepInput.focus();
+                return;
+            }
+
+            // ✅ CEP válido
             cepCache[cep] = data;
             preencherEndereco(data);
+
             await buscarServicos(cep);
+
+            showToast("CEP encontrado com sucesso!", "success");
+
             irParaStep("stepForm");
+
         } catch (err) {
-            alert(err.message);
-            // Permitir que o usuário preencha manualmente
+
+            showToast("Erro ao consultar CEP. Tente novamente.", "error");
+
             ruaInput.value = "";
             bairroInput.value = "";
             cidadeInput.value = "";
             ufInput.value = "";
-            irParaStep("stepForm");
+
         } finally {
             loaderCep.classList.add("hidden");
         }
+
     });
 
     // ================= FUNÇÃO PARA CRIAR PROSPECTO =================
-    function prepararProspect() {
-        const nome = document.getElementById("nome").value;
-        const cpf = document.getElementById("cpf").value.replace(/\D/g, "");
-        const telefone = document.getElementById("tel1").value.replace(/\D/g, "");
-        const telefone2 = document.getElementById("tel2").value.replace(/\D/g, "");
-        const rg = document.getElementById("rg").value;
-        const cep = cepInput.value.replace(/\D/g, "");
-        const rua = ruaInput.value;
-        const bairro = bairroInput.value;
-        const cidade = cidadeInput.value;
-        const uf = ufInput.value;
-        const email = document.getElementById("email").value;
-
-        return { nome, cpf, telefone, telefone2, rg, cep, rua, bairro, cidade, uf, email, empresa: empresaSelecionada };
+    if (!form) {
+        console.error("Formulário não encontrado!");
+        return;
     }
 
-    // 🔹 Exemplo de uso: console.log(prepararProspect());
+    form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!empresaSelecionada) {
+            showToast("Selecione uma empresa antes de enviar.", "warning");
+            return;
+        }
+
+        if (!selectPlano.value) {
+            showToast("Selecione um plano antes de enviar.", "warning");
+            return;
+        }
+
+
+        const bloqueio = localStorage.getItem("bloqueioProspecto");
+        if (bloqueio && Date.now() < parseInt(bloqueio)) {
+            showToast("Aguarde alguns minutos antes de enviar novo cadastro.", "warning");
+            return;
+        }
+
+
+
+
+        const dados = {
+            nome_razaosocial: form.nome.value,
+            cpf_cnpj: form.cpf.value.replace(/\D/g, ""),
+            data_nascimento: form.data_nascimento.value,
+            email: form.email.value,
+            rg: document.getElementById("rg").value,
+            rg_emissor: document.getElementById("orgao").value,
+            rg_uf: document.getElementById("uf_rg").value,
+
+            telefone: tel1.value.replace(/\D/g, ""),
+            telefone_secundario: tel2?.value.replace(/\D/g, "") || "",
+
+            // 🔥 ENDEREÇO
+            cep: cepDisplay.value.replace(/\D/g, ""),
+            endereco: ruaInput.value,
+            numero: form.numero.value,
+            bairro: bairroInput.value,
+            cidade: cidadeInput.value,
+            estado: ufInput.value,
+
+            // 🔥 PLANO
+            servico: {
+                id_servico: Number(selectPlano.value),
+                valor: Number(selectPlano.selectedOptions[0]?.dataset.valor)
+            },
+
+            // 🔥 VENDEDOR
+            id_vendedor: parseInt(selectVendedor.value),
+
+            observacao: form.observacoes.value,
+
+            tipo_pessoa: "pf",
+            nacionalidade: "brasileiro"
+        };
+
+        try {
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerText = "Enviando...";
+            }
+
+            const formData = new FormData(form);
+
+
+            const response = await fetch(
+                `api.php?acao=createProspect&empresa=${empresaSelecionada}`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(dados)
+                }
+            );
+            console.log("JSON ENVIADO:", JSON.stringify(dados));
+
+            const result = await response.json();
+
+            if (result.success) {
+                showToast("Enviado com sucesso!", "success");
+                form.reset();
+            } else {
+                showToast(result.error || "Erro ao enviar.", "error");
+            }
+
+        } catch (error) {
+            console.error(error);
+            showToast("Erro ao conectar com servidor.", "error");
+        } finally {
+            if (btnSubmit) {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "ENVIAR FORMULÁRIO";
+            }
+        }
+    });
+
+
 });

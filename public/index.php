@@ -10,6 +10,8 @@
 
 <body>
 
+    <div id="toast" class="toast hidden"></div>
+
     <!-- ================= SELEÇÃO EMPRESA ================= -->
     <section id="selecaoEmpresa" class="selecao active">
         <div class="selecao-box">
@@ -81,6 +83,7 @@
                         <div class="form-group">
                             <label>Data de Nascimento *</label>
                             <input type="date" name="data_nascimento" required>
+                            <small id="erroData" class="erro-msg"></small>
                         </div>
 
                         <div class="form-group">
@@ -194,7 +197,7 @@
                         <!-- BOTÃO -->
                         <div class="full center">
                             <button type="submit" class="btn-submit">
-                                ENVIAR FORMULÁRIO
+                                ENVIAR
                             </button>
                         </div>
 

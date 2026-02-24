@@ -42,11 +42,22 @@ try {
             break;
 
         case 'createProspect':
-            $data = json_decode(file_get_contents("php://input"), true);
-            if (!$data) throw new Exception("Dados do prospect são obrigatórios");
+
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception("Método inválido. Use POST.");
+            }
+
+            // 🔥 LER JSON CORRETAMENTE
+            $input = json_decode(file_get_contents("php://input"), true);
+
+            if (empty($input)) {
+                throw new Exception("Dados do prospect são obrigatórios");
+            }
+
             $result = ($empresa === 'amazonet')
-                ? ApiHubsoft::createProspect($data)
-                : ApiHubsoftMania::createProspect($data);
+                ? ApiHubsoft::createProspect($input)
+                : ApiHubsoftMania::createProspect($input);
+
             break;
 
         default:
