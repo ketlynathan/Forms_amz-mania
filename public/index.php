@@ -139,7 +139,7 @@
                         </div>
                         <div class="form-group">
                             <label>Rua</label>
-                            <input type="text" id="rua" readonly>
+                            <input type="text" id="rua" required>
                         </div>
                         <div class="form-group">
                             <label>Número *</label>
@@ -147,7 +147,7 @@
                         </div>
                         <div class="form-group">
                             <label>Bairro</label>
-                            <input type="text" id="bairro" readonly>
+                            <input type="text" id="bairro" required>
                         </div>
                         <div class="form-group">
                             <label>Cidade</label>
@@ -164,6 +164,12 @@
                                 <option value="">Selecione o plano</option>
                             </select>
                             <div id="loaderPlanos" class="loader hidden">Buscando planos...</div>
+                        </div>
+
+                        <div class="full center hidden" id="containerVoltar">
+                            <button type="button" class="btn-voltar">
+                                ← Voltar ao início
+                            </button>
                         </div>
 
                         <div class="form-group">

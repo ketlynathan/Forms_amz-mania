@@ -37,6 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const dataInput = document.getElementById("data_nascimento");
     const erroData = document.getElementById("erroData");
 
+    const containerVoltar = document.getElementById("containerVoltar");
+    const btnVoltar = document.querySelector(".btn-voltar");
+
     // ---------------- FUNÇÕES ----------------
     function irParaStep(idStep) {
         document.querySelectorAll(".step").forEach(s => s.classList.add("hidden"));
@@ -86,16 +89,30 @@ document.addEventListener("DOMContentLoaded", () => {
             servicos = json.data?.servicos || [];
 
             if (servicos.length === 0) {
-                alert("Não há serviços disponíveis para este CEP.");
+
                 selectPlano.innerHTML = '<option value="">Nenhum plano disponível</option>';
-                btnContinuar.disabled = true; // desabilita continuar
-            } else {
-                popularPlanos(servicos);
-                btnContinuar.disabled = false;
+                selectPlano.disabled = true;
+
+                showToast(
+                    `${empresaSelecionada.toUpperCase()} não possui cobertura neste CEP.`,
+                    "warning"
+                );
+
+                containerVoltar.classList.remove("hidden");
+
+                return false; // 🔥 IMPORTANTE
             }
+
+            popularPlanos(servicos);
+            selectPlano.disabled = false;
+            containerVoltar.classList.add("hidden");
+
+            return true; // 🔥 IMPORTANTE
+
         } catch (err) {
             console.error("Erro ao buscar serviços:", err);
-            alert("Erro ao carregar serviços.");
+            showToast("Erro ao carregar serviços.", "error");
+            return false;
         }
     }
 
@@ -417,6 +434,30 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     });
+    if (btnVoltar) {
+        btnVoltar.addEventListener("click", () => {
+
+            // reset empresa
+            empresaSelecionada = null;
+
+            // limpar seleção visual
+            cards.forEach(c => c.classList.remove("ativo"));
+
+            // reset formulário
+            form.reset();
+            selectPlano.innerHTML = '<option value="">Selecione o plano</option>';
+            selectPlano.disabled = true;
+
+            // esconder botão voltar
+            containerVoltar.classList.add("hidden");
+
+            // voltar para tela inicial
+            formContainer.classList.add("hidden");
+            selecao.classList.remove("hidden");
+
+            showToast("Escolha uma empresa para continuar.", "success");
+        });
+    }
 
 
 });

@@ -81,6 +81,7 @@ body {
 
 .cards {
     display: -webkit-flex;
+    display: flex;
     justify-content: center;
     gap: 50px;
     margin: 50px 0;
@@ -118,8 +119,12 @@ body {
 }
 
 #btnContinuar {
-    padding: 14px 40px;
-    border-radius: 40px;
+    padding: 26px 70px;
+    /* aumenta altura e largura */
+    font-size: 18px;
+    /* aumenta texto */
+    border-radius: 50px;
+    /* deixa mais elegante */
     border: none;
     background: #00c853;
     color: #fff;
@@ -341,6 +346,22 @@ textarea {
         justify-self: stretch;
     }
 
+    .btn-voltar {
+        margin-top: 15px;
+        padding: 12px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 600;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        transition: 0.3s;
+    }
+
+    .btn-voltar:hover {
+        transform: scale(1.05);
+    }
+
     /* Container ajustado */
     .container {
         padding: 25px 20px;
@@ -394,9 +415,6 @@ textarea {
     background: linear-gradient(135deg, #f7971e, #ffd200);
 }
 
-.hidden {
-    display: none;
-}
 
 
 /* ================= AJUSTES FINAIS RESPONSIVO ================= */
@@ -407,6 +425,17 @@ textarea {
         padding: 20px 15px;
         /* reduz padding para caber na tela */
         border-radius: 15px;
+    }
+
+    .cards {
+        gap: 6px;
+    }
+
+    .card {
+        padding: 10px;
+        /* reduz padding interno */
+        margin-bottom: 0;
+        /* evita somar com gap */
     }
 
     /* CEP STEP */
@@ -446,6 +475,35 @@ textarea {
     .form-group textarea {
         width: 100%;
         max-width: 100%;
+    }
+
+    #btn-submit {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #btnBuscarCep {
+        width: 100%;
+        padding: 18px;
+        font-size: 16px;
+        border-radius: 50px;
+        background: linear-gradient(90deg, #00c853, #00e676);
+        box-shadow: 0 6px 15px rgba(0, 200, 83, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    #btnContinuar {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border-radius: 50px;
+        background: linear-gradient(90deg, #00c853, #00e676);
+        box-shadow: 0 6px 15px rgba(0, 200, 83, 0.3);
+        transition: all 0.3s ease;
+    }
+
+    #btnContinuar:active {
+        transform: scale(0.98);
     }
 
     /* Botão submit */
