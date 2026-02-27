@@ -413,7 +413,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     body: JSON.stringify(dados)
                 }
             );
-            console.log("JSON ENVIADO:", JSON.stringify(dados));
 
             const result = await response.json();
 

@@ -185,21 +185,6 @@
                             <textarea name="observacoes" required></textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label>Frente do Documento *</label>
-                            <input type="file" name="doc_frente" required>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Verso do Documento *</label>
-                            <input type="file" name="doc_verso" required>
-                        </div>
-
-                        <div class="form-group full">
-                            <label>Selfie com Documento *</label>
-                            <input type="file" name="selfie_doc" required>
-                        </div>
-
                         <!-- BOTÃO -->
                         <div class="full center">
                             <button type="submit" class="btn-submit">
